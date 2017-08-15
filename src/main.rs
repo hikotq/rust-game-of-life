@@ -1,10 +1,6 @@
 extern crate rand;
 
 use rand::Rng;
-use std::error::Error;
-use std::fs::File;
-use std::io::prelude::*;
-use std::path::Path;
 
 #[derive(Copy, Clone)]
 enum Cell {
@@ -90,8 +86,8 @@ impl Field {
 
     fn calc_next_cell_status(&self, cell_index: usize) -> Cell {
         use self::Cell::*;
-        let arround_cells = self.get_neighbor_cells(cell_index);
-        let arround_cells_num = arround_cells
+        let neighbor_cells = self.get_neighbor_cells(cell_index);
+        let neighbor_cells_num = neighbor_cells
             .into_iter()
             .filter(|cell| match *cell {
                 Alive => true,
@@ -99,9 +95,9 @@ impl Field {
             })
             .collect::<Vec<Cell>>()
             .len();
-        if arround_cells_num <= 1 || 4 <= arround_cells_num {
+        if neighbor_cells_num <= 1 || 4 <= neighbor_cells_num {
             Dead
-        } else if arround_cells_num == 3 {
+        } else if neighbor_cells_num == 3 {
             Alive
         } else {
             self.data[cell_index]
