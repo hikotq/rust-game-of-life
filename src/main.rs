@@ -1,6 +1,10 @@
 extern crate rand;
 
 use rand::Rng;
+use std::error::Error;
+use std::fs::File;
+use std::io::prelude::*;
+use std::path::Path;
 
 #[derive(Copy, Clone)]
 enum Cell {
@@ -31,13 +35,16 @@ impl Field {
 
     fn show(&self) {
         use self::Cell::*;
+        std::process::Command::new("clear")
+            .status()
+            .unwrap()
+            .success();
         let print_cell = |cell: &Cell| if let Alive = *cell {
             print!("O")
         } else {
             print!(" ")
         };
         for (index, cell) in self.data.iter().enumerate() {
-
             print_cell(cell);
             if (index + 1) % self.width == 0 {
                 println!("");
