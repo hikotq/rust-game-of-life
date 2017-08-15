@@ -1,0 +1,7 @@
+[package]
+name = "life_game"
+version = "0.1.0"
+authors = ["hikota <parame710@gmail.com>"]
+
+[dependencies]
+rand = "0.3"
