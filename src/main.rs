@@ -56,7 +56,7 @@ impl Field {
         if self.on_field(x, y) {
             Ok(self.data[x + y * self.width])
         } else {
-            Err("Out of index".to_string())
+            Err("Out of range!!".to_string())
         }
     }
 
