@@ -1,5 +1,11 @@
 extern crate rand;
 
+use std::error::Error;
+use std::fs::File;
+use std::path::Path;
+use std::io::{BufReader, BufRead};
+use std::env;
+use std::{thread, time};
 use rand::Rng;
 
 #[derive(Copy, Clone)]
@@ -15,6 +21,44 @@ struct Field {
 }
 
 impl Field {
+    fn read_field(filename: &str) -> Result<Field, String> {
+        use self::Cell::*;
+        let path = Path::new(filename);
+        let display = path.display();
+
+        let file = match File::open(&path) {
+            Err(why) => panic!("couldn't open {}: {}", display, Error::description(&why)),
+            Ok(file) => file,
+        };
+
+        let input = BufReader::new(file);
+        let mut data = Vec::new();
+        let mut line_length = 0;
+        for line in input.lines() {
+            line_length = line_length + 1;
+            let line = match line {
+                Ok(line) => line,
+                Err(e) => {
+                    panic!("An error occurred while reading a line {}", e);
+                }
+            };
+            for c in line.chars() {
+                if c == '\n' {
+                    continue;
+                }
+                data.push(if c == '■' { Alive } else { Dead });
+            }
+        }
+
+        let height = line_length;
+        let width = data.len() / height;
+        Ok(Field {
+            width: width,
+            height: height,
+            data: data,
+        })
+    }
+
     fn new(w: usize, h: usize) -> Field {
         use self::Cell::*;
         let mut data: Vec<Cell> = Vec::new();
@@ -69,7 +113,7 @@ impl Field {
             (x, y - 1),
             (x - 1, y - 1),
             (x - 1, y),
-            (x - 1, x + 1),
+            (x - 1, y + 1),
             (x, y + 1),
             (x + 1, y + 1),
         ];
@@ -118,9 +162,17 @@ impl Field {
 }
 
 fn main() {
-    let mut field = Field::new(10, 10);
+    let filename = match env::args().nth(1) {
+        Some(filename) => filename,
+        None => {
+            return;
+        }
+    };
+    let mut field = Field::read_field(&filename).unwrap();
+    let sleep_time = time::Duration::from_millis(100);
     loop {
         field.show();
         field = field.update_data();
+        thread::sleep(sleep_time);
     }
 }
