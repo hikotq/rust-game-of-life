@@ -1,4 +1,4 @@
 ## How to run
-```ruby:qiita.rb
-cargo run fields/glider/gun	
+```
+cargo run fields/glider_gun	
 ```
