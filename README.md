@@ -1,3 +1,4 @@
+This is Game of Life written in Rust.
 ## How to run
 ```
 cargo run fields/glider_gun	
